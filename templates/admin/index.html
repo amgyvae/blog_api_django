@@ -1,0 +1,69 @@
+{% extends "admin/index.html" %}
+{% load i18n unfold %}
+
+{% block breadcrumbs %}{% endblock %}
+
+{% block content %}
+<div class="flex flex-col gap-8">
+    <!-- 1. KPI Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        {% for kpi in kpis %}
+            {% component "unfold/components/card.html" with title=kpi.title %}
+                <div class="flex items-center justify-between">
+                    <span class="text-3xl font-bold">{{ kpi.metric }}</span>
+                    <span class="material-symbols-outlined text-4xl text-primary-500">{{ kpi.icon }}</span>
+                </div>
+            {% endcomponent %}
+        {% endfor %}
+    </div>
+
+    <!-- 2. Chart & Progress Bars -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div class="lg:col-span-2">
+            {% component "unfold/components/card.html" with title="Posts per Category" %}
+                {% component "unfold/components/chart/bar.html" with data=bar_chart_data %}{% endcomponent %}
+            {% endcomponent %}
+        </div>
+        <div class="flex flex-col gap-6">
+            {% component "unfold/components/card.html" with title="Publication Status" %}
+                <div class="flex flex-col gap-4">
+                    <div>
+                        <div class="flex justify-between mb-1 text-sm font-medium">
+                            <span>Published ({{ published_percentage }}%)</span>
+                        </div>
+                        {% component "unfold/components/progress.html" with value=published_percentage class="bg-green-500" %}{% endcomponent %}
+                    </div>
+                    <div>
+                        <div class="flex justify-between mb-1 text-sm font-medium">
+                            <span>Drafts ({{ draft_percentage }}%)</span>
+                        </div>
+                        {% component "unfold/components/progress.html" with value=draft_percentage class="bg-yellow-500" %}{% endcomponent %}
+                    </div>
+                </div>
+            {% endcomponent %}
+        </div>
+    </div>
+
+    <!-- 3. Top Authors Table -->
+    {% component "unfold/components/card.html" with title="Top 5 Authors by Posts" %}
+        <table class="w-full text-left text-sm">
+            <thead class="border-b border-gray-200 dark:border-gray-800 text-gray-500">
+                <tr>
+                    <th class="py-2">Author</th>
+                    <th class="py-2">Email</th>
+                    <th class="py-2 text-right">Posts Count</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for author in top_authors %}
+                <tr class="border-b border-gray-100 dark:border-gray-900">
+                    <td class="py-2 font-medium">{{ author.first_name }} {{ author.last_name }}</td>
+                    <td class="py-2 text-gray-500">{{ author.email }}</td>
+                    <td class="py-2 text-right font-bold text-primary-600">{{ author.posts_count }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% endcomponent %}
+</div>
+{% endblock %}
